@@ -1,44 +1,54 @@
-# 요구사항 명세서
-1. 아이디
-2. 페이지
-3. 어떤 기능
-4. 상세 내역
-5. 담당자
-6. 현재 진행 상태
+# React + TypeScript + Vite
 
-7. 시작일 / 종료일 (옵션)
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 요구사항 명세서 앱 만드는 요구사항 명세
+Currently, two official plugins are available:
 
-payload 
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-1. 폼
-  - 아이디: 자동생성
-  - 페이지: 전체 페이지를 어딘가에 추가해서 선택할 수 있도록 만듬
-  - 기능: 간단한 단어로 타이핑해서 기능 추가, 동일한 이름의 기능이 있다? 추가 못하게 만듬, Enter, Tab 등의 특정 키를 사용하여서 추가가 되게끔 할수 있음.
-  - 상세내역  
-    1. Enter, Tab 등의 특정 키를 사용하여서 추가가 되게끔 할수 있음. 
-    2. 추가된 상세내역들은 윗쪽에 보이게 할지, 상세내역 인풋창은 제일 아래에. 
-    3. 상세내역을 추가할 버튼을 오른쪽 채팅창 UI처럼 버튼있음. 
-    4. 버튼 누르면 상세내역에 아무것도 입력ㄴㄴ => 경고창을 띄워서 확인 누르면 상세내역으로 날라줌. 인풋 포커스
-    5. 추가되면 상세내역 인풋창을 초기화, 포커스
-    6. 만약에 아무것도 입력되지 않은 상태이지만 1개 이상의 상세내역들이 존재할시 Tab 치면 다음 창인 담당자 선택으로 넘어갈 수 잇게 해주세요.
-    7. 상세내역을 클릭/터치 시 삭제, 버튼 효과
-    8. 추가 시 중복사항 체크 중복시 추가 ㄴㄴ
-  - 담당자: 담당자를 추가할 수 있는 섹션을 만들어서 담당자 목록을 펼친 뒤 선택하게끔
-  - 진행상태: '계획중', '진행중', '완료' 중 택 1 할 수 잇게함
+## Expanding the ESLint configuration
 
-  - 추가/수정 구분을 위해 payload 전달 할수도 있게끔
-    1. 새로운 요구사항을 만들 때 
-    2. 어떠한 값을 받아오지 않아도 되는 상태
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-  - 수정
-    1. 이전에 만들어둔 요구사항을 수정하는 상태 어떠한 값(만들어둔 요구사항)
-  
-2. 보여질 화면 -> READ
-  - 그리드 분할/ 한 줄에 하나씩 
-  - 반응형 / 넘칠 때 스크롤 시킬지
-  - 카드 형태의 요구사항 들을 한 눈에 볼 수 있는 뷰/그리드로 자르는 뷰
-  - 요구사항을 수정할 수 있도록 수정 버튼 -> 페이지를 전환 / 모달
-  - 모든 UI들은 PC 기준 -> 모바일
-  - 삭제 -> 혹시 몰라서 그러니 삭제하면 지울 수 없다는 경고 후에 삭제 진행
+```js
+export default tseslint.config({
+  extends: [
+    // Remove ...tseslint.configs.recommended and replace with this
+    ...tseslint.configs.recommendedTypeChecked,
+    // Alternatively, use this for stricter rules
+    ...tseslint.configs.strictTypeChecked,
+    // Optionally, add this for stylistic rules
+    ...tseslint.configs.stylisticTypeChecked,
+  ],
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
+```
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default tseslint.config({
+  plugins: {
+    // Add the react-x and react-dom plugins
+    'react-x': reactX,
+    'react-dom': reactDom,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended typescript rules
+    ...reactX.configs['recommended-typescript'].rules,
+    ...reactDom.configs.recommended.rules,
+  },
+})
+```

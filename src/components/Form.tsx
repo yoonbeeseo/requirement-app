@@ -1,15 +1,9 @@
-import { useState, useRef, ChangeEvent, FormEvent } from "react";
+import { useState, useRef, ChangeEvent, FormEvent, use } from "react";
 import Input from "./Input";
 import Select from "./Select";
 import { v4 } from "uuid";
-
-type Props = {
-  payload?: RType; //! 수정 / 추가 구분
-  onSubmit: (requirement: RType) => void;
-  pages: string[];
-  managers: string[];
-  onCancel?: () => void;
-};
+import RContext from "../context/RContext";
+import { PayloadStore, usePayloadStore } from "../context/payload.store";
 
 const initialState: RType = {
   descs: [],
@@ -20,7 +14,9 @@ const initialState: RType = {
   title: "",
 };
 
-const Form = ({ payload, onSubmit, managers, pages, onCancel }: Props) => {
+const Form = () => {
+  const { payload } = usePayloadStore() as PayloadStore<RType>;
+  const { pages, managers, onChangeRs, rs } = use(RContext);
   const [r, setR] = useState<RType>(payload ?? initialState);
   const [desc, setDesc] = useState("");
   const [isWorkingonDesc, setIsWorkingonDesc] = useState(false);
@@ -97,10 +93,13 @@ const Form = ({ payload, onSubmit, managers, pages, onCancel }: Props) => {
       return focus("desc");
     }
 
-    onSubmit(r);
+    // onSubmit(r);
+    onChangeRs(
+      payload ? rs.map((item) => (item.id === r.id ? r : item)) : [...rs, r]
+    );
     setR({ ...initialState, id: v4() });
-    if (payload && onCancel) {
-      onCancel();
+    if (payload) {
+      //Todo: 뒤로가기
     }
   };
 
@@ -239,9 +238,11 @@ const Form = ({ payload, onSubmit, managers, pages, onCancel }: Props) => {
             />
           </div>
           <div className="flex-row gap-x-2.5">
-            {payload && onCancel && (
+            {payload && (
               <button
-                onClick={onCancel}
+                onClick={() => {
+                  //Todo: 뒤로가기
+                }}
                 className="flex-1 bg-gray-50"
                 type="button"
               >

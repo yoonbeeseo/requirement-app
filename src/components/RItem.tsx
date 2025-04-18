@@ -1,31 +1,14 @@
-import React, { useState } from "react";
-import Form from "./Form";
+import React from "react";
+import { Link } from "react-router";
 import { twMerge } from "tailwind-merge";
+import { PayloadStore, usePayloadStore } from "../context/payload.store";
 
 type Props = RType & {
   handleDelete: () => void;
-  handleUpdate: (requirement: RType) => void;
-  managers: string[];
-  pages: string[];
 };
-const RItem = ({
-  handleDelete,
-  handleUpdate,
-  managers,
-  pages,
-  ...r
-}: Props) => {
-  const [isUpdating, setIsUpdating] = useState(false);
-  const updatingHandler = () => setIsUpdating((prev) => !prev);
-  return isUpdating ? (
-    <Form
-      managers={managers}
-      pages={pages}
-      onSubmit={handleUpdate}
-      payload={r}
-      onCancel={updatingHandler}
-    />
-  ) : (
+const RItem = ({ handleDelete, ...r }: Props) => {
+  const { setPayload } = usePayloadStore() as PayloadStore<RType>;
+  return (
     <div className="p-5 rounded-md bg-gray-50 hover:shadow-md">
       <div className="flex-row justify-between border-b border-gray-200">
         <h3 className="font-semibold">
@@ -56,9 +39,13 @@ const RItem = ({
         ))}
       </ul>
       <div className="flex-row gap-x-2.5 justify-end">
-        <button className="bg-theme text-white" onClick={updatingHandler}>
+        <Link
+          to={`/${r.id}`}
+          onClick={() => setPayload(r)}
+          className="bg-theme text-white"
+        >
           수정
-        </button>
+        </Link>
         <button
           className="bg-warning text-white"
           onClick={() => {

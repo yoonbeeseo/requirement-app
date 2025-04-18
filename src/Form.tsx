@@ -1,22 +1,26 @@
 import { useState, useRef, ChangeEvent, FormEvent } from "react";
 import Input from "./Input";
 import Select from "./Select";
+import { v4 } from "uuid";
 
 type Props = {
   payload?: RType; //! 수정 / 추가 구분
   onSubmit: (requirement: RType) => void;
+  pages: string[];
+  managers: string[];
+  onCancel?: () => void;
 };
 
 const initialState: RType = {
   descs: [],
   page: "",
-  id: "",
+  id: v4(),
   manager: "",
   status: "계획중",
   title: "",
 };
 
-const Form = ({ payload, onSubmit }: Props) => {
+const Form = ({ payload, onSubmit, managers, pages, onCancel }: Props) => {
   const [r, setR] = useState<RType>(payload ?? initialState);
   const [desc, setDesc] = useState("");
   const [isWorkingonDesc, setIsWorkingonDesc] = useState(false);
@@ -93,10 +97,11 @@ const Form = ({ payload, onSubmit }: Props) => {
       return focus("desc");
     }
 
-    console.log(r);
-    return;
     onSubmit(r);
-    setR(initialState);
+    setR({ ...initialState, id: v4() });
+    if (payload && onCancel) {
+      onCancel();
+    }
   };
 
   return (
@@ -116,6 +121,7 @@ const Form = ({ payload, onSubmit }: Props) => {
               }}
               label="페이지"
               ref={pageRef}
+              value={r.page}
             >
               {pages.map((page, index) => {
                 return (
@@ -133,11 +139,12 @@ const Form = ({ payload, onSubmit }: Props) => {
               }}
               label="담당자"
               ref={managerRef}
+              value={r.manager}
             >
-              {pages.map((page, index) => {
+              {managers.map((manager) => {
                 return (
-                  <option key={page} value={page}>
-                    {index + 1}. {page}
+                  <option key={manager} value={manager}>
+                    {manager}
                   </option>
                 );
               })}
@@ -150,11 +157,12 @@ const Form = ({ payload, onSubmit }: Props) => {
               }}
               label="진행상태"
               ref={statusRef}
+              value={r.status}
             >
-              {pages.map((page, index) => {
+              {statuses.map((status) => {
                 return (
-                  <option key={page} value={page}>
-                    {index + 1}. {page}
+                  <option key={status} value={status}>
+                    {status}
                   </option>
                 );
               })}
@@ -230,9 +238,20 @@ const Form = ({ payload, onSubmit }: Props) => {
               }}
             />
           </div>
-          <button className="button lg:min-w-50">
-            {!payload ? "추가" : "수정"}
-          </button>
+          <div className="flex-row gap-x-2.5">
+            {payload && onCancel && (
+              <button
+                onClick={onCancel}
+                className="flex-1 bg-gray-50"
+                type="button"
+              >
+                취소
+              </button>
+            )}
+            <button className="button lg:min-w-50 flex-2">
+              {!payload ? "추가" : "수정"}
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -241,11 +260,4 @@ const Form = ({ payload, onSubmit }: Props) => {
 
 export default Form;
 
-const pages: string[] = [
-  "홈",
-  "상품",
-  "로그인",
-  "회원가입",
-  "나의상품",
-  "정보수정",
-];
+const statuses: RStatus[] = ["계획중", "진행중", "완료"];
